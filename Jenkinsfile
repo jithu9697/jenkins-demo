@@ -5,9 +5,10 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  serviceAccountName: jenkins
   containers:
-  - name: node
-    image: node:20-alpine
+  - name: kubectl
+    image: bitnami/kubectl:latest
     command: ["sleep"]
     args: ["99d"]
 '''
@@ -17,15 +18,15 @@ spec:
         stage('Checkout') {
             steps { checkout scm }
         }
-        stage('Install') {
-            steps { container('node') { sh 'npm install' } }
-        }
-        stage('Test') {
-            steps { container('node') { sh 'npm test' } }
+        stage('Deploy') {
+            steps {
+                container('kubectl') {
+                    sh 'kubectl apply -f deployment.yaml'
+                }
+            }
         }
     }
     post {
-        success { echo 'Build and tests passed!' }
-        failure { echo 'Build failed — check logs.' }
+        success { echo 'Deployed successfully!' }
     }
 }
