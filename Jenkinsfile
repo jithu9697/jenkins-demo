@@ -6,20 +6,26 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-  - name: shell
-    image: alpine:latest
+  - name: node
+    image: node:20-alpine
     command: ["sleep"]
     args: ["99d"]
 '''
         }
     }
     stages {
-        stage('Checkout Confirm') {
-            steps {
-                container('shell') {
-                    sh 'ls -la && cat hello.txt'
-                }
-            }
+        stage('Checkout') {
+            steps { checkout scm }
         }
+        stage('Install') {
+            steps { container('node') { sh 'npm install' } }
+        }
+        stage('Test') {
+            steps { container('node') { sh 'npm test' } }
+        }
+    }
+    post {
+        success { echo 'Build and tests passed!' }
+        failure { echo 'Build failed — check logs.' }
     }
 }
