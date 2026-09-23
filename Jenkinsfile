@@ -7,10 +7,10 @@ kind: Pod
 spec:
   serviceAccountName: jenkins
   containers:
-  - name: kubectl
-    image: bitnami/kubectl:latest
-    command: ["sleep"]
-    args: ["99d"]
+    - name: kubectl
+      image: alpine/k8s:1.30.2
+      command: ["sleep"]
+      args: ["99d"]
 '''
         }
     }
